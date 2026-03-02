@@ -58,7 +58,7 @@ dependencies {
         exclude group: "maven.modrinth"
         exclude group: "me.fallenbreath"
     })
-    jarJar(api("dev.ryanhcode.sable-companion:sable-companion-${project.minecraft_version}:${project.sable_companion_version_range}")) {
+    jarJar(api("dev.ryanhcode.sable-companion:sable-companion-common-${project.minecraft_version}:${project.sable_companion_version_range}")) {
         version {
             prefer project.sable_companion_version
         }

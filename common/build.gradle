@@ -33,7 +33,7 @@ dependencies {
     }
     api "fuzs.forgeconfigapiport:forgeconfigapiport-common-neoforgeapi:${fcap_version}"
     compileOnly "maven.modrinth:DistantHorizonsApi:${dh_api_version}"
-    api "dev.ryanhcode.sable-companion:sable-companion-${project.minecraft_version}:${project.sable_companion_version}"
+    api "dev.ryanhcode.sable-companion:sable-companion-common-${project.minecraft_version}:${project.sable_companion_version}"
 }
 
 configurations {
