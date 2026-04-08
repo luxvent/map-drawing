@@ -67,7 +67,7 @@ sourceSets.main.resources {
 publishMods {
 //    dryRun = true
     type = STABLE
-
+    displayName = "[Fabric] Mapwright $project.version"
     setChangelog(changelogFile.text)
 
     file = remapJar.archiveFile

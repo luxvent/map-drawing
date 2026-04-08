@@ -77,7 +77,7 @@ sourceSets.main.resources {
 publishMods {
 //    dryRun = true
     type = STABLE
-
+    displayName = "[NeoForge] Mapwright $project.version"
     setChangelog(changelogFile.text)
 
     file = jar.archiveFile
