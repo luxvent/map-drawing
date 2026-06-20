@@ -6,6 +6,7 @@ import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.network.chat.Component;
 import wawa.mapwright.MapwrightClient;
+import wawa.mapwright.Rendering;
 import wawa.mapwright.gui.GUIElementAtlases;
 import wawa.mapwright.map.MapScreen;
 import wawa.mapwright.map.StampBagScreen;
@@ -24,18 +25,23 @@ public class StampBagWidget extends AbstractWidget {
 
     @Override
     protected void renderWidget(final GuiGraphics guiGraphics, final int mouseX, final int mouseY, final float v) {
-        if ((this.mapScreen.toolPicker.getImageFromScissorTool() != null & MapwrightClient.TOOL_MANAGER.get() instanceof CopyTool)
-                || StampBagScreen.INSTANCE.getState() != StampBagScreen.ScreenState.IDLE) {
-            GUIElementAtlases.STAMP_BAG_OPEN.render(guiGraphics, this.getX(), this.getY());
-            if (this.isHovered) {
-                GUIElementAtlases.STAMP_BAG_OPEN_HIGHLIGHT.render(guiGraphics, this.getX() - 1, this.getY() - 1);
+        Rendering.inGuiShaderDraw = true;
+        try {
+            if ((this.mapScreen.toolPicker.getImageFromScissorTool() != null & MapwrightClient.TOOL_MANAGER.get() instanceof CopyTool)
+                    || StampBagScreen.INSTANCE.getState() != StampBagScreen.ScreenState.IDLE) {
+                GUIElementAtlases.STAMP_BAG_OPEN.render(guiGraphics, this.getX(), this.getY());
+                if (this.isHovered) {
+                    GUIElementAtlases.STAMP_BAG_OPEN_HIGHLIGHT.render(guiGraphics, this.getX() - 1, this.getY() - 1);
+                }
+            } else {
+                GUIElementAtlases.STAMP_BAG_CLOSED.render(guiGraphics, this.getX(), this.getY());
+                if (this.isHovered) {
+                    GUIElementAtlases.STAMP_BAG_CLOSED_HIGHLIGHT.render(guiGraphics, this.getX() - 1, this.getY() - 1);
+                    guiGraphics.renderTooltip(Minecraft.getInstance().font, Component.translatable("mapwright.tool.stamp"), mouseX, mouseY);
+                }
             }
-        } else {
-            GUIElementAtlases.STAMP_BAG_CLOSED.render(guiGraphics, this.getX(), this.getY());
-            if (this.isHovered) {
-                GUIElementAtlases.STAMP_BAG_CLOSED_HIGHLIGHT.render(guiGraphics, this.getX() - 1, this.getY() - 1);
-                guiGraphics.renderTooltip(Minecraft.getInstance().font, Component.translatable("mapwright.tool.stamp"), mouseX, mouseY);
-            }
+        } finally {
+            Rendering.inGuiShaderDraw = false;
         }
     }
 

@@ -56,63 +56,67 @@ public class StampEntryWidget extends AbstractStampScreenWidget {
 
     @Override
     protected void renderWidget(final GuiGraphics guiGraphics, final int mx, final int my, final float v) {
-        if (this.stampInformation == null) {
-            return;
-        }
+        Rendering.inGuiShaderDraw = true;
+        try {
+            if (this.stampInformation == null) {
+                return;
+            }
 
-        final StampTexture manager = this.stampInformation.getTextureManager();
-        final NativeImage tex = manager.getTexture();
-        if (tex == null) {
-            return;
-        }
+            final StampTexture manager = this.stampInformation.getTextureManager();
+            final NativeImage tex = manager.getTexture();
+            if (tex == null) {
+                return;
+            }
 
-        if (!this.registered) {
-            this.registered = true;
-            Minecraft.getInstance().getTextureManager().register(this.id, manager);
-        }
+            if (!this.registered) {
+                this.registered = true;
+                Minecraft.getInstance().getTextureManager().register(this.id, manager);
+            }
 
-        final PoseStack ps = guiGraphics.pose();
-        ps.pushPose();
-        final RenderType renderType = VeilRenderType.get(Rendering.RenderTypes.PALETTE_SWAP, this.id);
-        if (renderType == null) {
-            return;
-        }
+            final RenderType renderType = VeilRenderType.get(Rendering.RenderTypes.PALETTE_SWAP, this.id);
+            if (renderType == null) {
+                return; // nothing pushed yet, safe
+            }
 
-        ps.pushPose();
-        //TODO:center
-        ps.translate(this.getX() + 1, this.getY() + 1, 0);
+            final PoseStack ps = guiGraphics.pose();
+            ps.pushPose();
+            //TODO:center
+            ps.translate(this.getX() + 1, this.getY() + 1, 0);
 
-        final float scale = Math.min(56f / tex.getWidth() / 2f, 56f / tex.getHeight() / 2f);
-        ps.scale(scale, scale, 1);
+            final float scale = Math.min(56f / tex.getWidth() / 2f, 56f / tex.getHeight() / 2f);
+            ps.scale(scale, scale, 1);
 
-        Rendering.renderTypeBlit(guiGraphics, renderType, 4.1, 4, 0, 0f, 0f,
-                manager.getTexture().getWidth(), manager.getTexture().getHeight(), manager.getTexture().getWidth(), manager.getTexture().getHeight(), 1);
-        ps.popPose();
-
-        ps.pushPose();
-        guiGraphics.enableScissor(this.getX() + 36, this.getY() + 5, this.getX() + 123, this.getY() + 27);
-        ps.translate(this.getX() + 38, this.getY() + 8, 0);
-        if (Minecraft.getInstance().font.width(this.stampInformation.getCustomName()) < 85) {
-            ps.translate(0, 4, 0);
-        }
-
-        // slight scale to handle wordwrap weirdness
-        ps.scale(1.05f, 1.05f, 1);
-
-        //TODO: scroll
-        guiGraphics.drawWordWrap(Minecraft.getInstance().font, FormattedText.of(this.stampInformation.getCustomName()), 0, 0, 85, Color.WHITE.getRGB());
-        guiGraphics.disableScissor();
-        ps.popPose();
-
-        if (this.isHovered()) {
-            ps.translate(0, 0, 10);
-            final int tx = mx - tex.getWidth() - 16;
-            final int ty = my - tex.getHeight() / 2;
-            guiGraphics.blitSprite(StampBagDebuggerTool.backgroundID, tx - 5, ty - 5, tex.getWidth() + 10, tex.getHeight() + 10);
-            Rendering.renderTypeBlit(guiGraphics, renderType, tx, ty, 0, 0f, 0f,
+            Rendering.renderTypeBlit(guiGraphics, renderType, 4.1, 4, 0, 0f, 0f,
                     manager.getTexture().getWidth(), manager.getTexture().getHeight(), manager.getTexture().getWidth(), manager.getTexture().getHeight(), 1);
-        }
+            ps.popPose();
 
-        ps.popPose();
+            ps.pushPose();
+            guiGraphics.enableScissor(this.getX() + 36, this.getY() + 5, this.getX() + 123, this.getY() + 27);
+            ps.translate(this.getX() + 38, this.getY() + 8, 0);
+            if (Minecraft.getInstance().font.width(this.stampInformation.getCustomName()) < 85) {
+                ps.translate(0, 4, 0);
+            }
+
+            // slight scale to handle wordwrap weirdness
+            ps.scale(1.05f, 1.05f, 1);
+
+            //TODO: scroll
+            guiGraphics.drawWordWrap(Minecraft.getInstance().font, FormattedText.of(this.stampInformation.getCustomName()), 0, 0, 85, Color.WHITE.getRGB());
+            guiGraphics.disableScissor();
+            ps.popPose();
+
+            if (this.isHovered()) {
+                ps.translate(0, 0, 10);
+                final int tx = mx - tex.getWidth() - 16;
+                final int ty = my - tex.getHeight() / 2;
+                guiGraphics.blitSprite(StampBagDebuggerTool.backgroundID, tx - 5, ty - 5, tex.getWidth() + 10, tex.getHeight() + 10);
+                Rendering.renderTypeBlit(guiGraphics, renderType, tx, ty, 0, 0f, 0f,
+                        manager.getTexture().getWidth(), manager.getTexture().getHeight(), manager.getTexture().getWidth(), manager.getTexture().getHeight(), 1);
+            }
+
+            ps.popPose();
+        } finally {
+            Rendering.inGuiShaderDraw = false;
+        }
     }
 }

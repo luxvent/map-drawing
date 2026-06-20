@@ -17,6 +17,7 @@ import org.lwjgl.glfw.GLFW;
 import wawa.mapwright.Helper;
 import wawa.mapwright.LerpedVector2d;
 import wawa.mapwright.MapwrightClient;
+import wawa.mapwright.Rendering;
 import wawa.mapwright.map.stamp_bag.widgets.StampBagWidget;
 import wawa.mapwright.map.tool.PanTool;
 import wawa.mapwright.map.widgets.CompassWidget;
@@ -91,19 +92,24 @@ public class MapScreen extends Screen {
 
     @Override
     public void render(final GuiGraphics guiGraphics, final int mouseX, final int mouseY, final float partialTick) {
-        final Vector2d diffTracker = new Vector2d();
-        this.lerpedPanning.tickProgress(0.05 * Minecraft.getInstance().getTimer().getRealtimeDeltaTicks(), diffTracker);
-        this.backgroundPanning.add(diffTracker.mul(this.zoom));
+        Rendering.inGuiShaderDraw = true;
+        try {
+            final Vector2d diffTracker = new Vector2d();
+            this.lerpedPanning.tickProgress(0.05 * Minecraft.getInstance().getTimer().getRealtimeDeltaTicks(), diffTracker);
+            this.backgroundPanning.add(diffTracker.mul(this.zoom));
 
-        super.render(guiGraphics, mouseX, mouseY, partialTick);
+            super.render(guiGraphics, mouseX, mouseY, partialTick);
 
-        this.stampScreen.renderScreen(guiGraphics, mouseX, mouseY, partialTick);
+            this.stampScreen.renderScreen(guiGraphics, mouseX, mouseY, partialTick);
 
-        final Vec2 mouse = Helper.preciseMousePos();
-        guiGraphics.pose().pushPose();
-        guiGraphics.pose().translate(mouse.x % 1, mouse.y % 1, 0);
-        MapwrightClient.TOOL_MANAGER.get().renderScreen(guiGraphics, mouseX, mouseY);
-        guiGraphics.pose().popPose();
+            final Vec2 mouse = Helper.preciseMousePos();
+            guiGraphics.pose().pushPose();
+            guiGraphics.pose().translate(mouse.x % 1, mouse.y % 1, 0);
+            MapwrightClient.TOOL_MANAGER.get().renderScreen(guiGraphics, mouseX, mouseY);
+            guiGraphics.pose().popPose();
+        } finally {
+            Rendering.inGuiShaderDraw = false;
+        }
     }
 
     // widgets that are rendered last (on top) have the highest interaction priority

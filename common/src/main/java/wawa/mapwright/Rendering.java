@@ -24,6 +24,13 @@ import java.io.InputStream;
 
 public class Rendering {
 
+	/**
+	 * True for the duration of MapScreen's render pass. Works around in Veil's Iris
+	 * compat that redirects any Veil-shaded draw into an internal Iris
+	 * framebuffer whenever an Iris pipeline is registered. See {@link wawa.mapwright.mixin.compat.VeilIrisCompatFix }
+	 */
+	public static boolean inGuiShaderDraw = false;
+
 	public static class RenderTypes {
 		public static final ResourceLocation PALETTE_SWAP = MapwrightClient.id("palette_swap");
 		public static final ResourceLocation UV_REMAP = MapwrightClient.id("uv_remap");
@@ -55,16 +62,22 @@ public class Rendering {
 
 		final RenderType renderType = VeilRenderType.get(RenderTypes.UV_REMAP, skinTexture, Textures.HEAD_ICON);
 		if(renderType == null) return;
-		final ShaderUniform xOffset = VeilRenderSystem.setShader(Shaders.UV_REMAP).getUniform("XOffset");
 
-		final float rot = ((player.yRotO + 90) % 360) / 360.0f;
-		final int frame = Math.round(rot * 16);
+		Rendering.inGuiShaderDraw = true;
+		try {
+			final ShaderUniform xOffset = VeilRenderSystem.setShader(Shaders.UV_REMAP).getUniform("XOffset");
 
-		xOffset.setFloat(0.0f);
-		Rendering.renderTypeBlit(graphics, renderType, x, y, 0, 0.0f, 16.0f * frame, 16, 16, 16, 256, alpha);
+			final float rot = ((player.yRotO + 90) % 360) / 360.0f;
+			final int frame = Math.round(rot * 16);
 
-		xOffset.setFloat(0.5f);
-		Rendering.renderTypeBlit(graphics, renderType, x, y, 0, 0.0f, 16.0f * frame, 16, 16, 16, 256, alpha);
+			xOffset.setFloat(0.0f);
+			Rendering.renderTypeBlit(graphics, renderType, x, y, 0, 0.0f, 16.0f * frame, 16, 16, 16, 256, alpha);
+
+			xOffset.setFloat(0.5f);
+			Rendering.renderTypeBlit(graphics, renderType, x, y, 0, 0.0f, 16.0f * frame, 16, 16, 16, 256, alpha);
+		} finally {
+			Rendering.inGuiShaderDraw = false;
+		}
 	}
 
 	public static NativeImage getPaletteTexture() {
@@ -102,9 +115,9 @@ public class Rendering {
 	}
 
 	public static void renderTypeBlitUV1(final GuiGraphics guiGraphics, final RenderType renderType,
-										 final int x, final int y, final int width, final int height,
-										 final int textureWidth, final int textureHeight, final int blitOffset,
-										 final float u, final float v) {
+	                                     final int x, final int y, final int width, final int height,
+	                                     final int textureWidth, final int textureHeight, final int blitOffset,
+	                                     final float u, final float v) {
 		final Matrix4f matrix4f = guiGraphics.pose().last().pose();
 		final BufferBuilder bufferBuilder = Tesselator.getInstance().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_LIGHTMAP_COLOR);
 		bufferBuilder.addVertex(matrix4f, (float)x, (float)y, (float)blitOffset)

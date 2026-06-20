@@ -1,6 +1,7 @@
 package wawa.mapwright.map.stamp_bag.widgets;
 
 import net.minecraft.client.gui.GuiGraphics;
+import wawa.mapwright.Rendering;
 import wawa.mapwright.gui.GUIElementAtlases;
 
 public class DualGUIElement extends GUIElementButton{
@@ -15,10 +16,15 @@ public class DualGUIElement extends GUIElementButton{
 
 	@Override
 	protected void renderWidget(final GuiGraphics guiGraphics, final int mouseX, final int mouseY, final float partialTick) {
-		if (this.imageSwitch) {
-            this.secondary.render(guiGraphics, this.getX(), this.getY());
-		} else {
-			super.renderWidget(guiGraphics, mouseX, mouseY, partialTick);
+		Rendering.inGuiShaderDraw = true;
+		try {
+			if (this.imageSwitch) {
+				this.secondary.render(guiGraphics, this.getX(), this.getY());
+			} else {
+				super.renderWidget(guiGraphics, mouseX, mouseY, partialTick);
+			}
+		} finally {
+			Rendering.inGuiShaderDraw = false;
 		}
 	}
 }
