@@ -15,7 +15,8 @@
     "coordinates_config.DebugScreenOverlayMixin",
     "coordinates_config.GuiMixin",
     "coordinates_config.KeyboardHandlerMixin",
-    "coordinates_config.PlayerMixin"
+    "coordinates_config.PlayerMixin",
+    "compat.VeilIrisCompatFix"
   ],
   "injectors": {
     "defaultRequire": 1
