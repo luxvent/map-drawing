@@ -1,1 +1,2 @@
 - Updated Veil to 4.2.1 (Fixes incompatability with Sodium 0.8.12([16](https://github.com/BeeIsYou/map-drawing/issues/16)) )
+- Fixed map screen not rendering whenever an Iris shaderpack is active on newer versions of Veil
